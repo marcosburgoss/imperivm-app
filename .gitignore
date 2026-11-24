@@ -19,6 +19,7 @@ imperivm/frontend/angular/.angular/
 /MEMORIA PROYECTO - MARCOS BURGOS.docx
 /como iniciar.txt
 *.R
+/DB/*.csv
 /DB/*.sql
 !/DB/unidades.sql
 !/DB/habilidades.sql
