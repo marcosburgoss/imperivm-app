@@ -1,0 +1,44 @@
+<div @verticalSlideFadeInOut class="comparison-container">
+  <!-- UNIDAD 1 -->
+  <div class="unit1-div" *ngIf="unit1 && (caso === 1 || caso === 3)">
+    <div class="unit-icon" matTooltip="{{unit1.nombre}}" [style.background]="getCivGradient(unit1.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(level1)}">
+      <img @rotateInOut [src]="unit1.imagen" class="unit-image">
+      <div class="cant-icon" *ngIf="amount1 > 1">{{ amount1 }}</div>
+      <div class="level-icon" *ngIf="level1 > 1" [style.color]="getLevelColor(level1)" [style.border-color]="getLevelColor(level1)">{{ level1 }}</div>
+    </div>
+  </div>
+
+  <div class="unit1-div" *ngIf="unit1 && (caso === 2 || caso === 4)">
+    <div class="unit-icon" matTooltip="{{unit.nombre}}" *ngFor="let unit of unit1; let i = index" [style.background]="getCivGradient(unit.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(levelArmy1[i])}">
+      <img @rotateInOut [src]="unit.imagen" class="unit-image">
+      <div *ngIf="amountArmy1[i] > 1" class="cant-icon" >{{ amountArmy1[i] }}</div>
+      <div *ngIf="levelArmy1[i] > 1" class="level-icon" [style.color]="getLevelColor(levelArmy1[i])" [style.border-color]="getLevelColor(levelArmy1[i])">{{ levelArmy1[i] }}</div>
+    </div>
+  </div>
+
+  <div class="result">
+    <!-- <i class="fas fa-angles-right"></i> -->
+    <i *ngIf="probabilidad > 50" class="fa-solid fa-right-long"></i>
+    <i *ngIf="probabilidad < 50" class="fa-solid fa-left-long"></i>
+    <i *ngIf="probabilidad === 50" class="fa fa-left-right"></i>
+    <div [ngClass]="{'win': probabilidad > 55, 'draw': probabilidad >= 45 && probabilidad <= 55, 'lose': probabilidad < 45}">{{ probabilidad }} %</div>
+    <div class="result-text">{{ mensaje }}</div>
+  </div>
+
+  <!-- UNIDAD 2 -->
+  <div class="unit2-div" *ngIf="unit2 && (caso === 1 || caso === 2)">
+    <div class="unit-icon" matTooltip="{{unit2.nombre}}" [style.background]="getCivGradient(unit2.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(level2)}">
+      <img @rotateInOut [src]="unit2.imagen" class="unit-image">
+      <div class="cant-icon" *ngIf="amount2 > 1">{{ amount2 }}</div>
+      <div class="level-icon" *ngIf="level2 > 1" [style.color]="getLevelColor(level2)" [style.border-color]="getLevelColor(level2)">{{ level2 }}</div>
+    </div>
+  </div>
+
+  <div class="unit2-div" *ngIf="unit2 && (caso === 3 || caso === 4)">
+    <div class="unit-icon" matTooltip="{{unit.nombre}}" *ngFor="let unit of unit2; let i = index" [style.background]="getCivGradient(unit.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(levelArmy2[i])}">
+      <img @rotateInOut [src]="unit.imagen" class="unit-image">
+      <div *ngIf="amountArmy2[i] > 1" class="cant-icon" >{{ amountArmy2[i] }}</div>
+      <div *ngIf="levelArmy2[i] > 1" class="level-icon" [style.color]="getLevelColor(levelArmy2[i])" [style.border-color]="getLevelColor(levelArmy2[i])">{{ levelArmy2[i] }}</div>
+    </div>
+  </div>
+</div>

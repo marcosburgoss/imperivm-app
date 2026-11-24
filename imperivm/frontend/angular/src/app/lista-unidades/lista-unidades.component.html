@@ -1,0 +1,187 @@
+<!-- PANEL DE FILTROS -->
+<div @verticalSlideFadeInOut class="filter-panel">
+  <div class="filter-group">
+    <!-- Barra de búsqueda -->
+    <div class="search">
+      <input id="search" type="text" placeholder="Buscar..." [(ngModel)]="searchUnit" (input)="filterUnits()">
+      <i class="fa-solid fa-search"></i>
+    </div>
+    <!-- Botones de filtrado -->
+    <div class="button-group">
+      <button (click)="goToComparison()">
+        <i class="fa-solid fa-balance-scale"></i>
+      </button>
+      <button (click)="clearFilters()" [disabled]="!isFiltered">
+        <i class="fa-solid fa-filter-circle-xmark"></i>
+      </button>
+    </div>
+  </div>
+  <!-- Filtrado por civilización y tipo -->
+  <div class="slicers">
+    <div class="slicer-civ">
+      <button *ngFor="let civ of civs" [ngClass]="{'selected': selectedCivs.has(civ)}" (click)="toggleCivSelection(civ)">
+        <img src="assets/icons/escudos/{{ civ }}2.png" alt="{{ civ }}">
+      </button>
+    </div>
+    <div class="slicer-type">
+      <button *ngFor="let type of types" [ngClass]="{'selected': selectedTypes.has(type)}" (click)="toggleTypeSelection(type)" matTooltip="{{getTypeDisplayName(type)}}" matTooltipShowDelay="1000" matTooltipHideDelay="500">
+        <i class="fa-solid" [ngClass]="typeIcons[type]"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGINACIÓN INICIO -->
+<div class="pagination">
+  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <span>Página {{ currentPage }} de {{ totalPages }}</span>
+  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+</div>
+
+<!-- PANEL DE ORDENAMIENTO -->
+<div class="sort-panel">
+  <div *ngFor="let field of sortableFields" class="sort-field">
+    {{ field.name }} &nbsp;
+    <button [ngClass]="{'selected': isSortedBy(field.value, 'asc')}" (click)="sortUnits(field.value, 'asc')">▲</button>
+    <button [ngClass]="{'selected': isSortedBy(field.value, 'desc')}" (click)="sortUnits(field.value, 'desc')">▼</button>
+  </div>
+</div>
+
+<!-- LISTA DE UNIDADES -->
+<div *ngIf="isLoading" class="loading-units">
+  <!-- Loading... -->
+  <svg class="progress-ring" width="120" height="120">
+    <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="58" cx="60" cy="60"/>
+  </svg>
+  <!-- <div class="dot-pulse">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div> -->
+</div>
+<div @listAnimation *ngIf="units && !isLoading" class="card-container">
+  <div class="card" *ngFor="let unidad of getPaginatedUnits()">
+    <div class="card-content" (mouseenter)="toggleHover(unidad)" (mouseleave)="toggleHover(unidad)">
+      <div class="unit-icon" [style.background]="getCivGradient(unidad.civilizacion)">
+        <img src="{{ unidad.imagen }}" alt="{{ unidad.nombre }}" class="img-unit">
+      </div>
+      <div class="details">
+        <div class="name">{{ unidad.nombre.toUpperCase() }}</div>
+      </div>
+      <div class="civ-icon">
+        <img src="assets/icons/escudos/{{ unidad.civilizacion }}2.png" alt="{{ unidad.civilizacion }}">
+      </div>
+      <div class="card-back" [ngClass]="{ 'show': unidad.showBack }">
+        <div class="back-title">{{ unidad.nombre.toUpperCase() }}</div>
+        <div class="back-content">
+          <button (click)="openModal(unidad); getUnitSkills(unidad.id)">
+            <i class="fas fa-question"></i>
+          </button>
+          <img src="assets/icons/escudos/{{ unidad.civilizacion }}1.png" alt="{{ unidad.civilizacion }}">
+          <button (click)="selectUnitForComparison(unidad)" [disabled]="!isComparing">
+            <i class="fas fa-balance-scale"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGINACIÓN FINAL -->
+<div class="pagination">
+  <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+    <i class="fa-solid fa-chevron-left"></i>
+  </button>
+  <span>Página {{ currentPage }} de {{ totalPages }}</span>
+  <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+    <i class="fa-solid fa-chevron-right"></i>
+  </button>
+</div>
+
+<!-- MODAL DETALLES DE UNIDAD -->
+<div *ngIf="selectedUnit" class="modal-overlay">
+  <div @zoomFadeInOut class="modal-content">
+    <button class="close-button" (click)="closeModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="modal-body">
+      <div class="modal-img">
+        <div class="civ-icon">
+          <img src="assets/icons/escudos/{{ selectedUnit.civilizacion }}2.png" alt="{{ selectedUnit.civilizacion }}">
+        </div>
+        <div class="unit-icon" [style.background]="getCivGradient(selectedUnit.civilizacion)">
+          <img src="{{ selectedUnit.imagen }}" alt="{{ selectedUnit.nombre }}" class="img-unit">
+        </div>
+        <div class="civ-icon">
+          <img src="assets/icons/escudos/{{ selectedUnit.civilizacion }}2.png" alt="{{ selectedUnit.civilizacion }}">
+        </div>
+      </div>
+      <!-- Detalles de la unidad -->
+      <div class="unit-details">
+        <div class="unit-name">{{ selectedUnit.nombre }}</div>
+        <div class="unit-items">
+          <!-- SALUD -->
+          <div class="item">
+            <i class="fas fa-heart" matTooltip="Salud"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.salud / maxHealth) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.salud }}</div>
+            </div>
+          </div>
+          <!-- ATAQUE -->
+          <div class="item">
+            <i class="fas fa-fist-raised" matTooltip="Ataque"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.ataque / maxAttack) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.ataque }}</div>
+            </div>
+          </div>
+          <!-- ALCANCE -->
+          <div class="item">
+            <i class="fas fa-bullseye" matTooltip="Alcance"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.alcance / maxRange) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.alcance }}</div>
+            </div>
+          </div>
+          <!-- DEFENSA -->
+          <div class="item">
+            <i class="fas fa-shield-alt" matTooltip="Defensa"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.defensa / maxDefense) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.defensa }}</div>
+            </div>
+          </div>
+          <!-- VELOCIDAD -->
+          <div class="item">
+            <i class="fas fa-running" matTooltip="Velocidad"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.velocidad / maxSpeed) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.velocidad }}</div>
+            </div>
+          </div>
+          <!-- COSTE -->
+          <div class="item">
+            <i *ngIf="selectedUnit.moneda === 'O'" class="fas fa-coins" matTooltip="Coste (oro)"></i>
+            <i *ngIf="selectedUnit.moneda === 'V'" class="fas fa-drumstick-bite" matTooltip="Coste (víveres)"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.coste / maxCost) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.coste }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Habilidades de la unidad -->
+        <div class="unit-skills">
+          <div *ngFor="let skill of skills" class="skill" matTooltip="{{skill.nombre}}">
+            <img [src]="skill.imagen">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+DB
+Documentos
+*.docx
+*.pdf
+*.pptx
+.idea
+.vscode
+**/__pycache__
+**/*.py[cod]
+imperivm/venv
+imperivm/frontend/angular/node_modules
+imperivm/frontend/angular/dist
+imperivm/frontend/angular/.angular

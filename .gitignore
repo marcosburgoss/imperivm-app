@@ -1,0 +1,34 @@
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+imperivm/venv/
+venv/
+
+# Node / Angular
+imperivm/frontend/angular/node_modules/
+imperivm/frontend/angular/dist/
+imperivm/frontend/angular/.angular/
+
+# Project documents and analysis scripts not needed by the application
+/Documentos/
+/PRESENTACION PROYECTO - MARCOS BURGOS.pptx
+/MEMORIA PROYECTO - MARCOS BURGOS.docx
+/como iniciar.txt
+*.R
+/DB/*.sql
+!/DB/unidades.sql
+!/DB/habilidades.sql
+!/DB/unidades_habilidades.sql
+!/DB/enfrentamientos.sql
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+~$*

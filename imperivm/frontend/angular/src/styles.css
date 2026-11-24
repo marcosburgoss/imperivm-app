@@ -1,0 +1,43 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+@font-face {
+  font-family: 'andiamo';
+  src: url('assets/fonts/andiamo.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'CaneNero';
+  src: url('assets/fonts/CaneNero.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cenotaph';
+  src: url('assets/fonts/Cenotaph-Titling.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Hamletornot';
+  src: url('assets/fonts/Hamletornot.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #222;
+  color: #fff;
+}

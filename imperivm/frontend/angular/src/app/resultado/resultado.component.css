@@ -1,0 +1,134 @@
+.comparison-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  border-radius: 20px;
+  border: 2px solid #333;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.comparison-container:hover {
+  background-color: #2b2b2b;
+  border-color: gold;
+  .result i {
+    color: gold;
+    transform: scale(1.2);
+  }
+  .win, .lose, .draw {
+    transform: scale(1.2);
+  }
+  .win {
+    color: lightgreen;
+  }
+  .lose {
+    color: lightcoral;
+  }
+  .draw {
+    color: gold;
+  }
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  /* background-color: #ccc; */
+}
+
+.result i {
+  font-size: 50px;
+  color: #ccc;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.win, .lose, .draw {
+  font-size: 36px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  color: #ccc;
+}
+
+.result-text {
+  font-size: 16px;
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.unit1-div, .unit2-div {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  width: 340px;
+  height: auto;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.unit2-div {
+  flex-direction: row;
+}
+
+.unit-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.unit-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+/* Inputs de cantidad y nivel */
+.cant-icon {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: radial-gradient(circle, #fff 0%, #777 100%);
+  color: #222;
+  /* font-weight: bold; */
+  border: 1px solid #777;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.level-icon {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  color: #fff;
+  border: 1px solid #fff;
+  background-color: #222;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

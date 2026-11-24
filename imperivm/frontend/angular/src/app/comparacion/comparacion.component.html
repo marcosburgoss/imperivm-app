@@ -1,0 +1,544 @@
+<div @fadeInOut class="title">
+  <img src="assets/images/imperivm.png">
+</div>
+<!-- Imagen de la civilización de la unidad 1 -->
+<div @zoomFadeInOut class="civilization-1" *ngIf="unit1.civilizacion !== 'empty' && !isArmy1">
+  <img src="assets/icons/escudos/{{ unit1.civilizacion }}2.png" alt="{{ unit1.civilizacion }}" class="civ-image">
+</div>
+<div @listAnimation class="civilization-1" *ngIf="isArmy1">
+  <div class="army-civ" *ngFor="let unit of army1; let i = index" [style.top.px]="floor(i / 2) * 160" [style.left.px]="(i % 2) * 130">
+    <img *ngIf="unit.civilizacion !== 'empty'" src="assets/icons/escudos/{{ unit.civilizacion }}2.png" alt="{{ unit.civilizacion }}" class="civ-images">
+  </div>
+</div>
+
+<!-- Imagen de la civilización de la unidad 2 -->
+<div @zoomFadeInOut class="civilization-2" *ngIf="unit2.civilizacion !== 'empty' && !isArmy2">
+  <img src="assets/icons/escudos/{{ unit2.civilizacion }}2.png" alt="{{ unit2.civilizacion }}" class="civ-image">
+</div>
+<div @listAnimation class="civilization-2" *ngIf="isArmy2">
+  <div class="army-civ" *ngFor="let unit of army2; let i = index" [style.top.px]="floor(i / 2) * 160" [style.left.px]="(i % 2) * 130">
+    <img *ngIf="unit.civilizacion !== 'empty'" src="assets/icons/escudos/{{ unit.civilizacion }}2.png" alt="{{ unit.civilizacion }}" class="civ-images">
+  </div>
+</div>
+
+<div class="comparison-container">
+
+  <!-- UNIDAD 1 -->
+  <div class="unit-div" *ngIf="!isArmy1" (mouseenter)="toggleHover(true, 1)" (mouseleave)="toggleHover(false, 1)">
+    <!-- Cantidad y nivel de la unidad -->
+    <div class="unit-inputs" *ngIf="isHovering1">
+      <div class="input-container">
+        <!-- <i class="fas fa-users"></i> -->
+        <input [(ngModel)]="amount1" [disabled]="unit1.civilizacion === 'empty'" type="number" class="form-control" min="1" step="1" max="99" />
+      </div>
+      <div class="input-container">
+        <!-- <i class="fas fa-star"></i> -->
+        <input [(ngModel)]="level1" [disabled]="unit1.civilizacion === 'empty'" type="number" class="form-control" min="1" step="1" max="99" />
+      </div>
+    </div>
+    <!-- Botones de acción -->
+    <div @horizontalSlideFadeInOut class="unit-buttons" id="unit-buttons-1" *ngIf="isHovering1">
+      <button class="add-btn" (click)="getRandomUnit(1, 0)" [disabled]="!isDeleted1">
+        <!-- <i class="fas fa-plus"></i> -->
+        <!-- <i class="fas fa-search"></i> -->
+        <i class="fas fa-shuffle"></i>
+      </button>
+      <button (click)="toggleCivDropdown(1)" [ngClass]="{'civ-active-btn': isCivActive1, 'civ-btn': !isCivActive1}" [disabled]="!isDeleted1 || isCived2">
+        <i class="fas fa-shield"></i>
+      </button>
+    </div>
+    <div class="table-container">
+      <table *ngIf="showDropdown1" class="civ-dropdown">
+        <tr *ngFor="let civ of civilizations">
+          <td (click)="selectCiv(civ.nombre, 1)"> {{ civ.nombre }} </td>
+        </tr>
+      </table>
+    </div>
+    <div @horizontalSlideFadeInOutRight class="unit-buttons" id="unit-buttons-2" *ngIf="isHovering1">
+      <button class="delete-btn" (click)="deleteUnit(1)" [disabled]="isDeleted1">
+        <i class="fas fa-trash"></i>
+      </button>
+      <button class="back-btn" (click)="goBack(1)" [disabled]="!isDeleted1 || !isBack1">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    </div>
+    <!-- Imagen de la unidad -->
+    <div @rotateInOut class="unit-icon" [style.background]="getCivGradient(unit1.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(level1)}">
+      <img @rotateIn *ngIf="unit1.id !== 0 && unit1.civilizacion !== 'empty'" [src]="unit1.imagen" class="unit-image">
+      <img @rotateIn *ngIf="unit1.id === 0 && unit1.civilizacion !== 'empty'" class="unit-image">
+      <button *ngIf="unit1.civilizacion === 'empty'" (click)="goToListaUnidades(1, isArmy2)" class="add-army">
+        <i class="fas fa-plus"></i>
+      </button>
+      <div *ngIf="unit1.civilizacion !== 'empty' && amount1 > 1" class="cant-icon">
+        {{ amount1}}
+      </div>
+      <div *ngIf="unit1.civilizacion !== 'empty' && level1 > 1" class="level-icon" [style.color]="getLevelColor(level1)" [style.border-color]="getLevelColor(level1)">
+        {{ level1 }}
+      </div>
+    </div>
+    <!-- Detalles de la unidad -->
+    <div @horizontalSlideFadeInOut class="unit-details">
+      <div class="unit-name">{{ unit1.nombre }}</div>
+      <div class="unit-items">
+        <!-- SALUD -->
+        <div class="item">
+          <i class="fas fa-heart" matTooltip="Salud"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.salud / maxHealth) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.salud }}</div>
+          </div>
+        </div>
+        <!-- ATAQUE -->
+        <div class="item">
+          <i class="fas fa-fist-raised" matTooltip="Ataque"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.ataque / maxAttack) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.ataque }}</div>
+          </div>
+        </div>
+        <!-- ALCANCE -->
+        <div class="item">
+          <i class="fas fa-bullseye" matTooltip="Alcance"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.alcance / maxRange) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.alcance }}</div>
+          </div>
+        </div>
+        <!-- DEFENSA -->
+        <div class="item">
+          <i class="fas fa-shield-alt" matTooltip="Defensa"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.defensa / maxDefense) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.defensa }}</div>
+          </div>
+        </div>
+        <!-- VELOCIDAD -->
+        <div class="item">
+          <i class="fas fa-running" matTooltip="Velocidad"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.velocidad / maxSpeed) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.velocidad }}</div>
+          </div>
+        </div>
+        <!-- COSTE -->
+        <div class="item">
+          <i *ngIf="unit1.moneda !== 'V'" class="fas fa-coins" matTooltip="Coste (oro)"></i>
+          <i *ngIf="unit1.moneda === 'V'" class="fas fa-drumstick-bite" matTooltip="Coste (víveres)"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit1.coste / maxCost) * 100" [style.background]="getCivColor(unit1.civilizacion)"></div>
+            <div class="progress-value">{{ unit1.coste }}</div>
+          </div>
+        </div>
+      </div>
+      <!-- Habilidades de la unidad -->
+      <div class="unit-skills">
+        <div *ngFor="let skill of skills1" class="skill" matTooltip="{{skill.nombre}}">
+          <img (click)="openModalSkill(skill)" [src]="skill.imagen">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJÉRCITO 1 -->
+  <div class="army-div" *ngIf="isArmy1">
+    <div @listAnimation class="grid-container">
+      <div class="grid-item" *ngFor="let unit of army1; let i = index" (mouseenter)="toggleArmyInputs(true, i, 1)" (mouseleave)="toggleArmyInputs(false, i, 1)">
+        <div class="army-inputs" [class.show]="showInputs1[i]" *ngIf="i % 2 === 0">
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-users"></i>
+            <input [(ngModel)]="amountArmy1[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-star"></i>
+            <input [(ngModel)]="levelArmy1[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="random-unit" *ngIf="unit.id === 0">
+            <button class="add-btn" (click)="getRandomUnit(3, i)">
+              <i class="fas fa-shuffle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="unit-icon" (click)="openModalUnit(unit); getUnitSkills(unit.id, skills)" matTooltip="{{unit.nombre}}" [style.background]="getCivGradient(unit.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(levelArmy1[i])}">
+          <img @rotateIn *ngIf="unit.civilizacion !== 'empty'" [src]="unit.imagen" class="unit-image">
+          <button *ngIf="unit.civilizacion === 'empty'" (click)="goToListaUnidades(i+3, isArmy2)" class="add-army">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button *ngIf="isDeleteMode1 && unit.civilizacion !== 'empty'" (click)="deleteArmyUnit(i, 1)" class="delete-icon" >
+            <i class="fas fa-times"></i>
+          </button>
+          <div *ngIf="!isDeleteMode1 && unit.civilizacion !== 'empty' && amountArmy1[i] > 1" class="cant-icon" >
+            {{ amountArmy1[i] }}
+          </div>
+          <div *ngIf="!isDeleteMode1 && unit.civilizacion !== 'empty' && levelArmy1[i] > 1" class="level-icon" [style.color]="getLevelColor(levelArmy1[i])" [style.border-color]="getLevelColor(levelArmy1[i])">
+            {{ levelArmy1[i] }}
+          </div>
+        </div>
+        <div class="army-inputs" [class.show]="showInputs1[i]" *ngIf="i % 2 !== 0">
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-users"></i>
+            <input [(ngModel)]="amountArmy1[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-star"></i>
+            <input [(ngModel)]="levelArmy1[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="random-unit" *ngIf="unit.id === 0">
+            <button class="add-btn" (click)="getRandomUnit(3, i)">
+              <i class="fas fa-shuffle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="delete-mode">
+      <button (click)="toggleDeleteMode(1)">
+        <i *ngIf="isDeleteMode1" class="fas fa-times"></i>
+        <i *ngIf="!isDeleteMode1" class="fas fa-trash"></i>
+      </button>
+    </div>
+    <button class="deleteAll-btn" (click)="deleteAllUnits(1)" [style.left]="0">
+      <i class="fa fa-times-circle"></i>
+    </button>
+  </div>
+
+  <!-- BOTONES CENTRALES -->
+  <div class="central-container">
+    <!-- Botón de cambio a ejército -->
+    <div class="mode-button">
+      <button (click)="toggleArmyMode(1)">
+        <i *ngIf="isArmy1" class="fas fa-users"></i>
+        <i *ngIf="!isArmy1" class="fas fa-user"></i>
+      </button>
+      <button (click)="toggleArmyMode(2)">
+        <i *ngIf="isArmy2" class="fas fa-users"></i>
+        <i *ngIf="!isArmy2" class="fas fa-user"></i>
+      </button>
+    </div>
+
+    <!-- Botón de comparación -->
+    <div class="comparison-button">
+      <button (click)="predecir()" [disabled]="!unit1 || !unit2 || unit1.civilizacion === 'empty' || unit2.civilizacion === 'empty' || (unit1.id === 0 && unit2.id === 0) || isPredicting">
+        <i class="fas fa-exchange-alt"></i>
+      </button>
+    </div>
+
+    <!-- Botón de navegación a la página de unidades -->
+    <div class="search-button">
+      <button (click)="goToListaUnidades(0, false)">
+        <i class="fas fa-search"></i> Buscar Unidades
+      </button>
+    </div>
+  </div>
+
+  <!-- EJÉRCITO 2 -->
+  <div class="army-div" *ngIf="isArmy2">
+    <div @listAnimation class="grid-container">
+      <div class="grid-item" *ngFor="let unit of army2; let i = index" (mouseenter)="toggleArmyInputs(true, i, 2)" (mouseleave)="toggleArmyInputs(false, i, 2)">
+        <div class="army-inputs" [class.show]="showInputs2[i]" *ngIf="i % 2 === 0">
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-users"></i>
+            <input [(ngModel)]="amountArmy2[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-star"></i>
+            <input [(ngModel)]="levelArmy2[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="random-unit" *ngIf="unit.id === 0">
+            <button class="add-btn" (click)="getRandomUnit(4, i)">
+              <i class="fas fa-shuffle"></i>
+            </button>
+          </div>
+        </div>
+        <div class="unit-icon" (click)="openModalUnit(unit); getUnitSkills(unit.id, skills)" matTooltip="{{unit.nombre}}" [style.background]="getCivGradient(unit.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(levelArmy2[i])}">
+          <img @rotateIn *ngIf="unit.civilizacion !== 'empty'" [src]="unit.imagen" class="unit-image">
+          <button *ngIf="unit.civilizacion === 'empty'" (click)="goToListaUnidades(i+9, isArmy1)" class="add-army">
+            <i class="fas fa-plus"></i>
+          </button>
+          <button *ngIf="isDeleteMode2 && unit.civilizacion !== 'empty'" (click)="deleteArmyUnit(i, 2)" class="delete-icon" >
+            <i class="fas fa-times"></i>
+          </button>
+          <div *ngIf="!isDeleteMode2 && unit.civilizacion !== 'empty' && amountArmy2[i] > 1" class="cant-icon" >
+            {{ amountArmy2[i] }}
+          </div>
+          <div *ngIf="!isDeleteMode2 && unit.civilizacion !== 'empty' && levelArmy2[i] > 1" class="level-icon" [style.color]="getLevelColor(levelArmy2[i])" [style.border-color]="getLevelColor(levelArmy2[i])">
+            {{ levelArmy2[i] }}
+          </div>
+        </div>
+        <div class="army-inputs" [class.show]="showInputs2[i]" *ngIf="i % 2 !== 0">
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-users"></i>
+            <input [(ngModel)]="amountArmy2[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="input-div" *ngIf="unit.id !== 0">
+            <i class="fas fa-star"></i>
+            <input [(ngModel)]="levelArmy2[i]" type="number" class="form-control" min="1" step="1" max="99" />
+          </div>
+          <div class="random-unit" *ngIf="unit.id === 0">
+            <button class="add-btn" (click)="getRandomUnit(4, i)">
+              <i class="fas fa-shuffle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="delete-mode">
+      <button (click)="toggleDeleteMode(2)">
+        <i *ngIf="isDeleteMode2" class="fas fa-times"></i>
+        <i *ngIf="!isDeleteMode2" class="fas fa-trash"></i>
+      </button>
+    </div>
+    <button class="deleteAll-btn" (click)="deleteAllUnits(2)" [style.right]="0">
+      <i class="fa fa-times-circle"></i>
+    </button>
+  </div>
+
+
+
+  <!-- UNIDAD 2 -->
+  <div class="unit-div" *ngIf="!isArmy2" (mouseenter)="toggleHover(true, 2)" (mouseleave)="toggleHover(false, 2)">
+    <!-- Cantidad y nivel de la unidad -->
+    <div class="unit-inputs" *ngIf="isHovering2">
+      <div class="input-container">
+        <!-- <i class="fas fa-users"></i> -->
+        <input [(ngModel)]="amount2" [disabled]="unit2.civilizacion === 'empty'" type="number" class="form-control" min="1" step="1" max="99" />
+      </div>
+      <div class="input-container">
+        <!-- <i class="fas fa-star"></i> -->
+        <input [(ngModel)]="level2" [disabled]="unit2.civilizacion === 'empty'" type="number" class="form-control" min="1" step="1" max="99" />
+      </div>
+    </div>
+    <!-- Botones de acción -->
+    <div @horizontalSlideFadeInOut class="unit-buttons" id="unit-buttons-1" *ngIf="isHovering2">
+      <button class="add-btn" (click)="getRandomUnit(2, 0)" [disabled]="!isDeleted2">
+        <!-- <i class="fas fa-plus"></i> -->
+        <!-- <i class="fas fa-search"></i> -->
+        <i class="fas fa-shuffle"></i>
+      </button>
+      <button (click)="toggleCivDropdown(2)" [ngClass]="{'civ-active-btn': isCivActive2, 'civ-btn': !isCivActive2}" [disabled]="!isDeleted2 || isCived1">
+        <i class="fas fa-shield"></i>
+      </button>
+    </div>
+    <div class="table-container">
+      <table *ngIf="showDropdown2" class="civ-dropdown">
+        <tr *ngFor="let civ of civilizations">
+          <td (click)="selectCiv(civ.nombre, 2)"> {{ civ.nombre }} </td>
+        </tr>
+      </table>
+    </div>
+    <div @horizontalSlideFadeInOutRight class="unit-buttons" id="unit-buttons-2" *ngIf="isHovering2">
+      <button class="delete-btn" (click)="deleteUnit(2)" [disabled]="isDeleted2">
+        <i class="fas fa-trash"></i>
+      </button>
+      <button class="back-btn" (click)="goBack(2)" [disabled]="!isDeleted2 || !isBack2">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+    </div>
+    <!-- Imagen de la unidad -->
+    <div @rotateInOut class="unit-icon" [style.background]="getCivGradient(unit2.civilizacion)" [ngStyle]="{'box-shadow': '0 0 5px 1px ' + getLevelColor(level2)}">
+      <img @rotateIn *ngIf="unit2.id !== 0 && unit2.civilizacion !== 'empty'" [src]="unit2.imagen" class="unit-image">
+      <img @rotateIn *ngIf="unit2.id === 0 && unit2.civilizacion !== 'empty'" class="unit-image">
+      <button *ngIf="unit2.civilizacion === 'empty'" (click)="goToListaUnidades(2, isArmy1)" class="add-army">
+        <i class="fas fa-plus"></i>
+      </button>
+      <div *ngIf="unit2.civilizacion !== 'empty' && amount2 > 1" class="cant-icon" >
+        {{ amount2}}
+      </div>
+      <div *ngIf="unit2.civilizacion !== 'empty' && level2 > 1" class="level-icon" [style.color]="getLevelColor(level2)" [style.border-color]="getLevelColor(level2)">
+        {{ level2 }}
+      </div>
+    </div>
+    <!-- Detalles de la unidad -->
+    <div @horizontalSlideFadeInOutRight class="unit-details">
+      <div class="unit-name">{{ unit2.nombre }}</div>
+      <div class="unit-items">
+        <!-- SALUD -->
+        <div class="item">
+          <i class="fas fa-heart" matTooltip="Salud"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.salud / maxHealth) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.salud }}</div>
+          </div>
+        </div>
+        <!-- ATAQUE -->
+        <div class="item">
+          <i class="fas fa-fist-raised" matTooltip="Ataque"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.ataque / maxAttack) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.ataque }}</div>
+          </div>
+        </div>
+        <!-- ALCANCE -->
+        <div class="item">
+          <i class="fas fa-bullseye" matTooltip="Alcance"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.alcance / maxRange) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.alcance }}</div>
+          </div>
+        </div>
+        <!-- DEFENSA -->
+        <div class="item">
+          <i class="fas fa-shield-alt" matTooltip="Defensa"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.defensa / maxDefense) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.defensa }}</div>
+          </div>
+        </div>
+        <!-- VELOCIDAD -->
+        <div class="item">
+          <i class="fas fa-running" matTooltip="Velocidad"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.velocidad / maxSpeed) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.velocidad }}</div>
+          </div>
+        </div>
+        <!-- COSTE -->
+        <div class="item">
+          <i *ngIf="unit2.moneda !== 'V'" class="fas fa-coins" matTooltip="Coste (oro)"></i>
+          <i *ngIf="unit2.moneda === 'V'" class="fas fa-drumstick-bite" matTooltip="Coste (víveres)"></i>
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(unit2.coste / maxCost) * 100" [style.background]="getCivColor(unit2.civilizacion)"></div>
+            <div class="progress-value">{{ unit2.coste }}</div>
+          </div>
+        </div>
+      </div>
+      <!-- Habilidades de la unidad -->
+      <div class="unit-skills">
+        <div *ngFor="let skill of skills2" class="skill" matTooltip="{{skill.nombre}}">
+          <img [src]="skill.imagen" (click)="openModalSkill(skill)">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALES -->
+<div *ngIf="selectedSkill" class="modal-overlay">
+  <div @zoomFadeInOut class="modal-content">
+    <button class="close-button" (click)="closeModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="modal-body">
+      <div class="skill-img">
+        <img [src]="selectedSkill.imagen">
+      </div>
+      <div class="skill-details">
+        <div class="skill-name">{{ selectedSkill.nombre }}</div>
+        <div class="skill-description">{{ selectedSkill.descripcion }}</div>
+        <div class="skill-item" *ngIf="selectedSkill.energia">
+          <i class="fas fa-bolt" matTooltip="Energía"></i> &nbsp;
+          <div class="progress-bar">
+            <div class="progress" [style.width.%]="(selectedSkill.energia / 4) * 100"  [style.background]="'cadetblue'"></div>
+            <div class="progress-value">{{ selectedSkill.energia }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="selectedUnit" class="modal-overlay">
+  <div  @zoomFadeInOut class="modal-content">
+    <button class="close-button" (click)="closeModal()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="modal-body">
+      <div class="modal-img">
+        <div class="civ-icon">
+          <img src="assets/icons/escudos/{{ selectedUnit.civilizacion }}2.png" alt="{{ selectedUnit.civilizacion }}">
+        </div>
+        <div class="unit-icon2" [style.background]="getCivGradient(selectedUnit.civilizacion)">
+          <img src="{{ selectedUnit.imagen }}" alt="{{ selectedUnit.nombre }}" class="img-unit2">
+        </div>
+        <div class="civ-icon">
+          <img src="assets/icons/escudos/{{ selectedUnit.civilizacion }}2.png" alt="{{ selectedUnit.civilizacion }}">
+        </div>
+      </div>
+      <!-- Detalles de la unidad -->
+      <div class="unit-details">
+        <div class="unit-name">{{ selectedUnit.nombre }}</div>
+        <div class="unit-items">
+          <!-- SALUD -->
+          <div class="item">
+            <i class="fas fa-heart" matTooltip="Salud"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.salud / maxHealth) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.salud }}</div>
+            </div>
+          </div>
+          <!-- ATAQUE -->
+          <div class="item">
+            <i class="fas fa-fist-raised" matTooltip="Ataque"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.ataque / maxAttack) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.ataque }}</div>
+            </div>
+          </div>
+          <!-- ALCANCE -->
+          <div class="item">
+            <i class="fas fa-bullseye" matTooltip="Alcance"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.alcance / maxRange) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.alcance }}</div>
+            </div>
+          </div>
+          <!-- DEFENSA -->
+          <div class="item">
+            <i class="fas fa-shield-alt" matTooltip="Defensa"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.defensa / maxDefense) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.defensa }}</div>
+            </div>
+          </div>
+          <!-- VELOCIDAD -->
+          <div class="item">
+            <i class="fas fa-running" matTooltip="Velocidad"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.velocidad / maxSpeed) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.velocidad }}</div>
+            </div>
+          </div>
+          <!-- COSTE -->
+          <div class="item">
+            <i *ngIf="selectedUnit.moneda !== 'V'" class="fas fa-coins" matTooltip="Coste (oro)"></i>
+            <i *ngIf="selectedUnit.moneda === 'V'" class="fas fa-drumstick-bite" matTooltip="Coste (víveres)"></i>
+            <div class="progress-bar">
+              <div class="progress" [style.width.%]="(selectedUnit.coste / maxCost) * 100" [style.background]="getCivColor(selectedUnit.civilizacion)"></div>
+              <div class="progress-value">{{ selectedUnit.coste }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- Habilidades de la unidad -->
+        <div class="unit-skills">
+          <div *ngFor="let skill of skills" class="skill" matTooltip="{{skill.nombre}}">
+            <img [src]="skill.imagen">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- RESULTADO -->
+<div *ngIf="showResult" class="resultado-container">
+  <div *ngFor="let result of results" class="resultado">
+    <app-resultado
+      [probabilidad]="result.probabilidad"
+      [mensaje]="result.mensaje"
+      [unit1]="result.unidad1"
+      [unit2]="result.unidad2"
+      [caso]="result.caso"
+      [showResult]="showResult"
+      [amount1]="amount1"
+      [amount2]="amount2"
+      [level1]="level1"
+      [level2]="level2"
+      [amountArmy1]="amountArmy1"
+      [amountArmy2]="amountArmy2"
+      [levelArmy1]="levelArmy1"
+      [levelArmy2]="levelArmy2"
+    ></app-resultado>
+  </div>
+</div>
+
+
